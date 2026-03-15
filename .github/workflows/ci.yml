@@ -1,0 +1,35 @@
+name: CI/CD para NestJS
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+    
+    steps:
+    # 1. to clone repository
+      - name: Checkout codigo
+        uses: actions/checkout@v4
+    # 2. set up nodejs
+      - name: Configurar Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm' # Cache node_modules for more speed
+      # 3. Install dependencies
+      - name: Instalar dependencias
+        run: npm ci
+      # 4. Check linting (ESLint)
+      - name: Ejecutar ESlint
+        run: npm run lint
+      # 5. Compile the project
+      - name: Compilar con Nest
+        run: npm run build
